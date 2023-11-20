@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"io/ioutil"
 	"net/http"
 )
 
@@ -12,10 +11,6 @@ func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method == "GET" {
 			renderForm(w)
-			urlInput := r.URL.Query().Get("url")
-			if urlInput != "" {
-				fetchAndDisplayContent(w, urlInput)
-			}
 		} else if r.Method == "POST" {
 			urlInput := r.FormValue("url")
 			renderForm(w)
@@ -51,18 +46,8 @@ func renderForm(w http.ResponseWriter) {
 }
 
 func fetchAndDisplayContent(w http.ResponseWriter, urlInput string) {
-	resp, err := http.Get(urlInput)
-	if err != nil {
-		http.Error(w, "Failed to fetch URL", http.StatusInternalServerError)
-		return
-	}
-	defer resp.Body.Close()
-
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		http.Error(w, "Failed to read response body", http.StatusInternalServerError)
-		return
-	}
-
-	w.Write(body)
+	// For demonstration purposes, instead of fetching the URL content,
+	// we'll directly render the input URL without escaping HTML characters.
+	// This introduces the XSS vulnerability.
+	fmt.Fprintf(w, "<h2>Content from: %s</h2>", urlInput)
 }
